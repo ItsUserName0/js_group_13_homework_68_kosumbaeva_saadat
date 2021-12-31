@@ -1,2 +1,7 @@
 <h4 class="mb-4">Messages</h4>
-<app-message></app-message>
+<ng-container *ngIf="!isFetching">
+  <app-message *ngFor=" let m of messages" [message]="m"></app-message>
+</ng-container>
+<div class="spinner-border" *ngIf="isFetching">
+  <span class="sr-only">Loading...</span>
+</div>

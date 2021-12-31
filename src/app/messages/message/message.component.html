@@ -1,9 +1,9 @@
-<div class="card">
+<div class="card mb-3" *ngIf="message">
   <div class="card-body">
     <div class="row no-gutters">
-      <h5 class="card-title">Author</h5>&nbsp;
-      <span class="text-muted">(date)</span>
+      <h5 class="card-title">{{message.author}}</h5>&nbsp;
+      <span class="text-muted">({{message.datetime}})</span>
     </div>
-    <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+    <p class="card-text">{{message.message}}</p>
   </div>
 </div>

@@ -5,6 +5,7 @@ import { AppComponent } from './app.component';
 import { MessagesComponent } from './messages/messages.component';
 import { MessageComponent } from './messages/message/message.component';
 import { NewMessageComponent } from './messages/new-message/new-message.component';
+import { HttpClientModule } from '@angular/common/http';
 
 @NgModule({
   declarations: [
@@ -14,7 +15,8 @@ import { NewMessageComponent } from './messages/new-message/new-message.componen
     NewMessageComponent
   ],
   imports: [
-    BrowserModule
+    BrowserModule,
+    HttpClientModule
   ],
   providers: [],
   bootstrap: [AppComponent]
