@@ -6,6 +6,7 @@ import { MessagesComponent } from './messages/messages.component';
 import { MessageComponent } from './messages/message/message.component';
 import { NewMessageComponent } from './messages/new-message/new-message.component';
 import { HttpClientModule } from '@angular/common/http';
+import { FormsModule } from '@angular/forms';
 
 @NgModule({
   declarations: [
@@ -16,7 +17,8 @@ import { HttpClientModule } from '@angular/common/http';
   ],
   imports: [
     BrowserModule,
-    HttpClientModule
+    HttpClientModule,
+    FormsModule,
   ],
   providers: [],
   bootstrap: [AppComponent]
