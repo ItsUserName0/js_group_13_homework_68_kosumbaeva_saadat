@@ -1,18 +1,18 @@
 import { Injectable } from '@angular/core';
 import { Message } from './message.model';
 import { Subject } from 'rxjs';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { map, tap } from 'rxjs/operators';
-import { HttpParams } from '@angular/common/http';
 
 @Injectable({
   providedIn: 'root'
 })
 export class MessageService {
-  messages: Message[] = [];
+  private messages: Message[] = [];
   messageChange = new Subject<Message[]>();
   messageFetching = new Subject<boolean>();
   messageUploading = new Subject<boolean>();
+  messageUpdate = new Subject<boolean>();
   interval = 0;
 
   constructor(private http: HttpClient) {
@@ -27,6 +27,7 @@ export class MessageService {
         })
       }))
       .subscribe(result => {
+        this.messages = result;
         this.messageFetching.next(false);
         this.messageChange.next(result);
       }, () => {
@@ -34,8 +35,20 @@ export class MessageService {
       });
   }
 
-  getMessages() {
-    return this.messages.slice();
+  start() {
+    if (this.messages.length < 0) return;
+    this.interval = setInterval(() => {
+      this.http.get<[message: Message]>(`http://146.185.154.90:8000/messages?datetime=${this.messages[this.messages.length - 1].datetime}`).subscribe(
+        result => {
+          if (result.length > 0) {
+            this.messageUpdate.next(true);
+          }
+        })
+    }, 2000);
+  }
+
+  stop() {
+    clearInterval(this.interval);
   }
 
   sendMessage(message: Message) {

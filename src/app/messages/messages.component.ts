@@ -9,27 +9,36 @@ import { Subscription } from 'rxjs';
   styleUrls: ['./messages.component.css']
 })
 export class MessagesComponent implements OnInit, OnDestroy {
-  messages: Message[] =[];
+  messages: Message[] = [];
   messagesChangeSubscription!: Subscription;
   messagesFetchingSubscription!: Subscription;
+  messagesUpdateSubscription!: Subscription;
   isFetching = false;
 
-  constructor(private messageService: MessageService) { }
+  constructor(private messageService: MessageService) {
+  }
 
   ngOnInit(): void {
-    this.messages = this.messageService.getMessages();
     this.messagesFetchingSubscription = this.messageService.messageFetching.subscribe(isFetching => {
       this.isFetching = isFetching;
     });
     this.messagesChangeSubscription = this.messageService.messageChange.subscribe(messages => {
       this.messages = messages;
     });
+    this.messagesUpdateSubscription = this.messageService.messageUpdate.subscribe(isUpdated => {
+      if (isUpdated) {
+        this.messageService.fetchMessages();
+      }
+    });
     this.messageService.fetchMessages();
+    this.messageService.start();
   }
 
   ngOnDestroy(): void {
+    this.messageService.stop();
     this.messagesFetchingSubscription.unsubscribe();
     this.messagesChangeSubscription.unsubscribe();
+    this.messagesUpdateSubscription.unsubscribe();
   }
 
 }
