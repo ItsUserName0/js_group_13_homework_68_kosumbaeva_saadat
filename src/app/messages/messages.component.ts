@@ -25,17 +25,13 @@ export class MessagesComponent implements OnInit, OnDestroy {
     this.messagesChangeSubscription = this.messageService.messageChange.subscribe(messages => {
       this.messages = messages;
     });
-    this.messagesUpdateSubscription = this.messageService.messageUpdate.subscribe(isUpdated => {
-      if (isUpdated) {
-        this.messageService.fetchMessages();
-      }
-    });
+    this.messagesUpdateSubscription = this.messageService.receivingMessages().subscribe(messages => {
+      this.messages = messages;
+    })
     this.messageService.fetchMessages();
-    this.messageService.start();
   }
 
   ngOnDestroy(): void {
-    this.messageService.stop();
     this.messagesFetchingSubscription.unsubscribe();
     this.messagesChangeSubscription.unsubscribe();
     this.messagesUpdateSubscription.unsubscribe();

@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Message } from './message.model';
-import { Subject } from 'rxjs';
+import { Observable, Subject } from 'rxjs';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { map, tap } from 'rxjs/operators';
 
@@ -12,8 +12,6 @@ export class MessageService {
   messageChange = new Subject<Message[]>();
   messageFetching = new Subject<boolean>();
   messageUploading = new Subject<boolean>();
-  messageUpdate = new Subject<boolean>();
-  interval = 0;
 
   constructor(private http: HttpClient) {
   }
@@ -35,20 +33,24 @@ export class MessageService {
       });
   }
 
-  start() {
-    if (this.messages.length < 0) return;
-    this.interval = setInterval(() => {
-      this.http.get<[message: Message]>(`http://146.185.154.90:8000/messages?datetime=${this.messages[this.messages.length - 1].datetime}`).subscribe(
-        result => {
-          if (result.length > 0) {
-            this.messageUpdate.next(true);
-          }
-        })
-    }, 2000);
-  }
-
-  stop() {
-    clearInterval(this.interval);
+  receivingMessages() {
+    return new Observable<Message[]>(subscriber => {
+      if (this.messages.length < 0) return;
+      const interval = setInterval(() => {
+        this.http.get<[message: Message]>(`http://146.185.154.90:8000/messages?datetime=${this.messages[this.messages.length - 1].datetime}`).subscribe(
+          result => {
+            if (result.length > 0) {
+              this.fetchMessages();
+              subscriber.next(this.messages);
+            }
+          });
+      }, 2000);
+      return {
+        unsubscribe() {
+          clearInterval(interval);
+        }
+      }
+    });
   }
 
   sendMessage(message: Message) {
